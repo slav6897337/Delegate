@@ -11,25 +11,13 @@ namespace PseudoEnumerableTask
         /// </summary>
         /// <typeparam name="TSource">The type of the elements of source sequence.</typeparam>
         /// <param name="source">The source sequence.</param>
-        /// <param name="predicate">A <see cref="IPredicate{T}"/> to test each element of a sequence for a condition.</param>
+        /// <param name="predicate">A <see cref="Func<TSource, bool>"/> delegate.</param>
         /// <returns>An sequence of elements from the source sequence that satisfy the condition.</returns>
         /// <exception cref="ArgumentNullException">Thrown when source sequence or predicate is null.</exception>
         public static IEnumerable<TSource> Filter<TSource>(this TSource[] source, Func<TSource, bool> predicate)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException($"{source} can't be null");
-            }
-
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-
-            if (source.Length == 0)
-            {
-                throw new ArgumentException("Array cannot be empty.");
-            }
+            ValidateSourseByNull(source);
+            ValidateSourseByNull(predicate);
 
             List<TSource> result = new List<TSource>();
 
@@ -92,6 +80,22 @@ namespace PseudoEnumerableTask
         internal static void Swap<T>(ref T left, ref T right)
         {
             throw new NotImplementedException();
+        }
+
+        private static void ValidateSourseByNull<T>(T source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException($"{source} can't be null");
+            }
+
+            if (source is string str)
+            {
+                if (string.IsNullOrEmpty(str))
+                {
+                    throw new ArgumentException("Array cannot be empty.");
+                }
+            }
         }
     }
 }
