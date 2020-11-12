@@ -1,5 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+
 
 namespace PseudoEnumerableTask
 {
@@ -43,9 +47,12 @@ namespace PseudoEnumerableTask
         /// <exception cref="ArgumentNullException">Thrown when comparer is null, and one or more elements
         /// of the sequence do not implement the <see cref="IComparable{T}"/>  interface.
         ///</exception>
-        public static TSource[] SortBy<TSource>(this TSource[] source, IComparer<TSource> comparer)
+        public static TSource[] SortBy<TSource>(this TSource[] source, Func<TSource, TSource, int> comparer)
         {
-            throw new NotImplementedException();
+            ValidateSourseByNull(source);    
+
+            return QuickSort<TSource>(source, 0, source.Length - 1, comparer);      
+            
         }
 
         /// <summary>
@@ -57,7 +64,21 @@ namespace PseudoEnumerableTask
         /// <exception cref="ArgumentNullException">Thrown when sequence is null.</exception>
         public static TResult[] TypeOf<TResult>(this object[] source)
         {
-            throw new NotImplementedException();
+            ValidateSourseByNull(source);
+            TResult[] result = new TResult[source.Length];
+            int j = 0;
+            for (int i = 0; i < source.Length; i++)
+            {
+                if (source[i] is TResult temp)
+                {
+                    result[j] = temp;
+                    j++;
+                }
+            }
+
+            Array.Resize(ref result, j);
+
+            return result;
         }
 
         /// <summary>
@@ -68,9 +89,13 @@ namespace PseudoEnumerableTask
         /// <exception cref="ArgumentNullException">Thrown when sequence is null.</exception>
         public static TSource[] Reverse<TSource>(this TSource[] source)
         {
-            throw new NotImplementedException();
+            ValidateSourseByNull(source);
+
+            source = System.Linq.Enumerable.Reverse(source).ToArray();          
+
+            return source;
         }
-    
+
         /// <summary>
         /// Swaps two objects.
         /// </summary>
@@ -79,7 +104,40 @@ namespace PseudoEnumerableTask
         /// <param name="right">Second object.</param>
         internal static void Swap<T>(ref T left, ref T right)
         {
-            throw new NotImplementedException();
+            T temp = left;
+            left = right;
+            right = temp;
+        }
+
+        static int Partition<TSource>(TSource[] array, int minIndex, int maxIndex, Func<TSource, TSource, int> comparer)
+        {    
+            var pivot = minIndex - 1;
+            for (var i = minIndex; i < maxIndex; i++)
+            {
+                if (comparer(array[i], array[maxIndex])<=0) 
+                {
+                    pivot++;
+                    Swap(ref array[pivot], ref array[i]);
+                }
+            }
+
+            pivot++;
+            Swap(ref array[pivot], ref array[maxIndex]);
+            return pivot;
+        }
+
+        static TSource[] QuickSort<TSource>(TSource[] array, int minIndex, int maxIndex, Func<TSource, TSource, int> comparer)
+        {
+            if (minIndex >= maxIndex)
+            {
+                return array;
+            }
+
+            var pivotIndex = Partition(array, minIndex, maxIndex, comparer);
+            QuickSort(array, minIndex, pivotIndex - 1, comparer);
+            QuickSort(array, pivotIndex + 1, maxIndex, comparer);
+
+            return array;
         }
 
         private static void ValidateSourseByNull<T>(T source)
@@ -91,10 +149,11 @@ namespace PseudoEnumerableTask
 
             if (source is string str)
             {
-                if (string.IsNullOrEmpty(str))
+                if (!string.IsNullOrEmpty(str))
                 {
-                    throw new ArgumentException("Array cannot be empty.");
+                    return;
                 }
+                throw new ArgumentException("Array cannot be empty.");
             }
         }
     }

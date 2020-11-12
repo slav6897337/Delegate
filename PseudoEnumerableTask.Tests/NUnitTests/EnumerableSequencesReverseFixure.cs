@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace PseudoEnumerableTask.Tests.NUnitTests
 {
     [TestFixture(new[] {"Beg", null, "Life", "I", "i", "I", null, "To"},
-        new[] {"To", null, "I", "i", "I", "Life", null, "Beg"},
+        new[] {"To", null, "i", "I", "I", "Life", null, "Beg"},
         TypeArgs = new Type[] {typeof(string)})]
     [TestFixture(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
         new[] {10, 9, 8, 7, 6, 5, 4, 3, 2, 1},

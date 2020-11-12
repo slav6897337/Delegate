@@ -7,7 +7,7 @@ namespace PseudoEnumerableTask.Tests.NUnitTests
 {
     [TestFixture(
         new[] {"Beg", null, "Life", "I", "i", "I", null, "To"},
-        new[] {null, null, "I", "i", "I", "To", "Beg", "Life"},
+        new[] {null, null, "i", "I", "I", "To", "Beg", "Life"},
         TypeArgs = new Type[] {typeof(string)})]
 
     [TestFixture(
@@ -19,28 +19,32 @@ namespace PseudoEnumerableTask.Tests.NUnitTests
     {
         private readonly T[] source;
         private readonly T[] expected;
-        private readonly IComparer<T> comparer;
+        private Func<T, T, int> comparer;
 
         public EnumerableSequencesSortByFixture(T[] source, T[] expected)
         {
             this.expected = expected;
             this.source = source;
-            this.comparer = ComparerCreator(typeof(T));
+            comparer = ComparerCreator(typeof(T));
         }
 
         [Test]
         public void SortByTest() => CollectionAssert.AreEqual(expected, source.SortBy(comparer));
         
-        private static IComparer<T> ComparerCreator(Type type)
+        private Func<T, T, int> ComparerCreator(Type type)
         {
             if (type == typeof(string))
             {
-                return (IComparer<T>) new StringByLengthComparer();
+                var temp = new StringByLengthComparer<string>();
+                comparer = temp.Compare;
+                return comparer;
             }
 
             if (type == typeof(int))
             {
-                return (IComparer<T>) new IntegerByAbsComparer();
+                var temp = new StringByLengthComparer<string>();
+                comparer = temp.Compare;
+                return comparer;
             }
 
             return null;
