@@ -49,9 +49,20 @@ namespace PseudoEnumerableTask
         ///</exception>
         public static TSource[] SortBy<TSource>(this TSource[] source, Func<TSource, TSource, int> comparer)
         {
-            ValidateSourseByNull(source);    
+            ValidateSourseByNull(source);
 
-            return QuickSort<TSource>(source, 0, source.Length - 1, comparer);      
+            for (int i = 0; i < source.Length - 1; i++)
+            {
+                for (int j = i + 1; j < source.Length; j++)
+                {
+                    if (comparer(source[i], source[j]) > 0)
+                    {
+                        Swap<TSource>(ref source[i], ref source[j]);
+                    }
+                }
+            }
+
+            return source;      
             
         }
 
@@ -109,36 +120,7 @@ namespace PseudoEnumerableTask
             right = temp;
         }
 
-        static int Partition<TSource>(TSource[] array, int minIndex, int maxIndex, Func<TSource, TSource, int> comparer)
-        {    
-            var pivot = minIndex - 1;
-            for (var i = minIndex; i < maxIndex; i++)
-            {
-                if (comparer(array[i], array[maxIndex])<=0) 
-                {
-                    pivot++;
-                    Swap(ref array[pivot], ref array[i]);
-                }
-            }
 
-            pivot++;
-            Swap(ref array[pivot], ref array[maxIndex]);
-            return pivot;
-        }
-
-        static TSource[] QuickSort<TSource>(TSource[] array, int minIndex, int maxIndex, Func<TSource, TSource, int> comparer)
-        {
-            if (minIndex >= maxIndex)
-            {
-                return array;
-            }
-
-            var pivotIndex = Partition(array, minIndex, maxIndex, comparer);
-            QuickSort(array, minIndex, pivotIndex - 1, comparer);
-            QuickSort(array, pivotIndex + 1, maxIndex, comparer);
-
-            return array;
-        }
 
         private static void ValidateSourseByNull<T>(T source)
         {

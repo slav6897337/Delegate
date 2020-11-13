@@ -35,23 +35,19 @@ namespace PseudoEnumerableTask.Tests.NUnitTests
         {
             get
             {
-                yield return new TestCaseData(
-                        new StringByLengthComparer<string>(),
-                        new [] {"Beg", null, "Life", "I", "i", "I", null, "To"})
+                yield return new TestCaseData(new StringByLengthComparer<string>(), new [] {"Beg", null, "Life", "I", "i", "I", null, "To"})
                     .Returns(new [] {null, null, "i", "I", "I", "To", "Beg", "Life"});
-                yield return new TestCaseData(
-                        new StringByLengthComparer<string>(),
-                        new [] {null, "Longer", "Longest", "Short", null, null})
+                yield return new TestCaseData(new StringByLengthComparer<string>(), new [] {null, "Longer", "Longest", "Short", null, null})
                     .Returns(new [] {null, null, null, "Short", "Longer", "Longest"});
             }
         }
 
         
         [TestCaseSource(nameof(SortByTestCases))]
-        public string[] SortByTests(Func<string, string, int> comparer, string[] source)
+        public string[] SortByTests(StringByLengthComparer<string> comp, string[] source)
         {
-            var temp = new StringByLengthComparer<string>();
-            comparer = temp.Compare;
+           
+            Func<string, string, int> comparer = comp.Compare;
             return source.SortBy(comparer).ToArray();
         }
 
